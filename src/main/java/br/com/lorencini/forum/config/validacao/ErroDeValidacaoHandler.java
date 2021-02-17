@@ -21,7 +21,7 @@ public class ErroDeValidacaoHandler {//é um interceptador que quando ouver algu
 	
 	//se acontecer qualquer esta exception MethodArgumentNotValidException(validacao de form) na controller o spring vai chamar
 	//este método passando como pararametro a exception que aconteceu
-	@ResponseStatus(code = HttpStatus.BAD_REQUEST)//informa o status que o spring tem que devolver 
+	@ResponseStatus(code = HttpStatus.BAD_REQUEST)//informa o status que o spring tem que devolver, pois 200 é padrão 
 	@ExceptionHandler(MethodArgumentNotValidException.class)
 	public List<ErroDeFormularioDto> handle(MethodArgumentNotValidException exception) {
 		//tratamento:
