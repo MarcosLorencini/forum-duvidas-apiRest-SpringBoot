@@ -1,10 +1,10 @@
 package br.com.lorencini.forum.form;
 
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 
 import org.hibernate.validator.constraints.Length;
 
-import com.sun.istack.NotNull;
 
 import br.com.lorencini.forum.modelo.Curso;
 import br.com.lorencini.forum.modelo.Topico;

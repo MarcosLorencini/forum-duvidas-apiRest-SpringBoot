@@ -8,6 +8,8 @@ import javax.transaction.Transactional;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -47,6 +49,7 @@ public class TopicosController {
 	private CursoRepository cursoRepository;
 	
 	@GetMapping
+	@Cacheable(value = "listaDeTopico") //guarda o retorno do metodo em cach listaDeTopico= identificador único do cache.
 	public Page<TopicoDto> lista(@RequestParam(required = false) String nomeCurso,  
 			@PageableDefault(sort="id", direction = Direction.DESC, page = 0, size = 10) Pageable paginacao) {//usa o dto para escolher quais atributos quer retornar e não precisa retornar tudo que esta em Topico.java
 		
@@ -76,6 +79,7 @@ public class TopicosController {
 	//retorno void por padrão retorna 200
 	@PostMapping
 	@Transactional
+	@CacheEvict(value = "listaDeTopico", allEntries = true)//limpa o cache do método lista para não ter informação desatualizada
 	public ResponseEntity<TopicoDto> cadastrar(@RequestBody @Valid TopicoForm form, UriComponentsBuilder uriBuilder) {
 		//@ResponseBody: spring é para pegar topico do corpo da requisão e não como parametro da url igual em GET
 		//tem que converter form para Topico que o parametro de save está esperando
@@ -104,6 +108,7 @@ public class TopicosController {
 	
 	@PutMapping("/{id}")
 	@Transactional //comita a transacao depois que rodar o metodo
+	@CacheEvict(value = "listaDeTopico", allEntries = true)//limpa o cache do método lista para não ter informação desatualizada
 	public ResponseEntity<TopicoDto> atualizar(@PathVariable Long id, @RequestBody @Valid AtualizacaoTopicoForm form) {
 		Optional<Topico> optional = topicoRepository.findById(id);
 
@@ -119,6 +124,7 @@ public class TopicosController {
 	
 	@DeleteMapping("/{id}")
 	@Transactional
+	@CacheEvict(value = "listaDeTopico", allEntries = true)//limpa o cache do método lista para não ter informação desatualizada
 	public ResponseEntity<?> remover(@PathVariable Long id) {
 		Optional<Topico> optional = topicoRepository.findById(id);
 		if(optional.isPresent()) {
