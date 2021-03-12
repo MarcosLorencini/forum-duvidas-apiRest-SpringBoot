@@ -1,12 +1,23 @@
 package br.com.lorencini.forum.modelo;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToMany;
+
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 @Entity
-public class Usuario {
+public class Usuario implements UserDetails {//informa para o spring qual a classe é o usario do sistema
+
+	private static final long serialVersionUID = 1L;
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -14,6 +25,10 @@ public class Usuario {
 	private String nome;
 	private String email;
 	private String senha;
+	
+	@ManyToMany(fetch = FetchType.EAGER)//tem que colocar pois por padrão ToMany é Lazy
+	private List<Perfil> perfis = new ArrayList<>();//perfis do usuario
+	
 
 	@Override
 	public int hashCode() {
@@ -70,6 +85,46 @@ public class Usuario {
 
 	public void setSenha(String senha) {
 		this.senha = senha;
+	}
+
+	//relacionado com os perfis do usuário
+	@Override
+	public Collection<? extends GrantedAuthority> getAuthorities() {//tem que implementar o GrantedAuthority na classe Perfil
+		return this.perfis;
+	}
+
+	//spring vai pegar a senha do usuario
+	@Override
+	public String getPassword() {
+		return this.senha;
+	}
+
+	
+	//o spring pega o usuario
+	@Override
+	public String getUsername() {
+		return this.email;
+	}
+
+	//abaixo todos os métodos são true, pois não vamos fazer este controle no código
+	@Override
+	public boolean isAccountNonExpired() {
+		return true;
+	}
+
+	@Override
+	public boolean isAccountNonLocked() {
+		return true;
+	}
+
+	@Override
+	public boolean isCredentialsNonExpired() {
+		return true;
+	}
+
+	@Override
+	public boolean isEnabled() {
+		return true;
 	}
 
 }
