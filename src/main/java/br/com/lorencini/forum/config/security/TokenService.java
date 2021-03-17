@@ -7,6 +7,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 import br.com.lorencini.forum.modelo.Usuario;
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 
@@ -31,6 +32,20 @@ public class TokenService {
 				.setExpiration(dataExpiracao)// 1 dia de expiracao
 				.signWith(SignatureAlgorithm.HS256, secret)// pega a senha da aplicacao que gera o hash da assinatura do token e cripotografa com o SignatureAlgorithm.HS256 e gera o token
 				.compact();
+	}
+	
+	public boolean isTokenValido(String token) {
+		try {
+			Jwts.parser().setSigningKey(this.secret).parseClaimsJws(token);
+			return true;
+		} catch (Exception e) {//ele joga uma exception se o token estiver inválido por isso o try catch
+			return false;
+		}
+	}
+
+	public Long getIdUsuario(String token) {
+		Claims claims = Jwts.parser().setSigningKey(this.secret).parseClaimsJws(token).getBody();//devolve o corpo do token 
+		return Long.parseLong(claims.getSubject());
 	}
 
 }

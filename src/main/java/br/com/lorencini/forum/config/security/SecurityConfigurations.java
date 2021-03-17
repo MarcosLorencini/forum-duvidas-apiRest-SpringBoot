@@ -12,6 +12,9 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+
+import br.com.lorencini.forum.repository.UsuarioRepository;
 
 @EnableWebSecurity//habilita o modulo seguranca na aplicacao
 @Configuration// habilitar fazer algumas configuracoes como beans
@@ -20,6 +23,11 @@ public class SecurityConfigurations extends WebSecurityConfigurerAdapter {
 	@Autowired
 	private AutenticacaoService autenticacaoService;
 	
+	@Autowired
+	private TokenService tokenService;
+	
+	@Autowired
+	private UsuarioRepository usuarioRepository;
 	
 	//sobrescrever este método para injetar no controller AutenticacaoController
 	@Override
@@ -52,11 +60,12 @@ public class SecurityConfigurations extends WebSecurityConfigurerAdapter {
 		.antMatchers(HttpMethod.POST,"/auth").permitAll()//liberar url de login
 		.anyRequest().authenticated()//qualquer outra requisicao tem que estar autenticada
 		.and().csrf().disable()//como a autent é via jsonwebtoken. tem que disable no csrf() tipo ataque de hacker em app via web o spring security vai tentar validar do token do csrf()
-		.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);//informa ao spring que quando realizar a atuenticacao não se cria sessão, pois vamos usar token
+		.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)//informa ao spring que quando realizar a atuenticacao não se cria sessão, pois vamos usar token
+		.and().addFilterBefore(new AutenticacaoViaTokenFilter(tokenService, usuarioRepository), UsernamePasswordAuthenticationFilter.class);//cadastrando o nosso filter e o token que já vem no sprign por padrão 
 		//and().formLogin();//gerar um formulario de autenticacao porém ele cria sessão
 		
 	}
-	
+	//new AutenticacaoViaTokenFilter(tokenService) teve que passar o token no construstor, pois na classe AutenticacaoViaTokenFilter teve que buscar o TokenService via construtor
 	
 	//configuracoes de recurso staticos(js, css, img, etc.)
 	@Override

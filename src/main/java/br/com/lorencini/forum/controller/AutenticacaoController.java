@@ -21,6 +21,8 @@ import br.com.lorencini.forum.form.LoginForm;
 @RequestMapping("/auth")
 public class AutenticacaoController {
 	
+	
+	//dispara o processo de autenticacao usuario/senha
 	@Autowired
 	private AuthenticationManager authManager;// classe do spring mas não consegue realizar a injeçao de dependencia 
 	//temos que config na classe SecurityConfiguration através do metodo authenticationManager()
