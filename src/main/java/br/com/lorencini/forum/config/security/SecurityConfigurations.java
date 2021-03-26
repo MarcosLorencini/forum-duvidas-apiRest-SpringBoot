@@ -58,6 +58,7 @@ public class SecurityConfigurations extends WebSecurityConfigurerAdapter {
 		.antMatchers(HttpMethod.GET,"/topicos").permitAll()//libera url GET com /topicos
 		.antMatchers(HttpMethod.GET,"/topicos/*").permitAll()//libera url GET com /topicos/e qualquer coisa que vier depois
 		.antMatchers(HttpMethod.POST,"/auth").permitAll()//liberar url de login
+		.antMatchers(HttpMethod.GET,"/actuator/**").permitAll()//libera a url de actuator. em prod tem que tirar o permitAll()
 		.anyRequest().authenticated()//qualquer outra requisicao tem que estar autenticada
 		.and().csrf().disable()//como a autent é via jsonwebtoken. tem que disable no csrf() tipo ataque de hacker em app via web o spring security vai tentar validar do token do csrf()
 		.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)//informa ao spring que quando realizar a atuenticacao não se cria sessão, pois vamos usar token
@@ -70,6 +71,12 @@ public class SecurityConfigurations extends WebSecurityConfigurerAdapter {
 	//configuracoes de recurso staticos(js, css, img, etc.)
 	@Override
 	public void configure(WebSecurity web) throws Exception {
+		//spring securtiy ignore as requis para o swagger(nao é para ter login para acessar a doc da api)
+		
+		 web.ignoring()
+		 //enderecos que o swagger chama
+	        .antMatchers("/**.html", "/v2/api-docs", "/webjars/**", "/configuration/**", "/swagger-resources/**");
+		
 	
 	}
 	

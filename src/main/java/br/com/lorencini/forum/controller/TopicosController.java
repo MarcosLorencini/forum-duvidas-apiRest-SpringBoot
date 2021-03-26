@@ -1,7 +1,6 @@
 package br.com.lorencini.forum.controller;
 
 import java.net.URI;
-import java.util.List;
 import java.util.Optional;
 
 import javax.transaction.Transactional;
@@ -11,11 +10,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.web.PageableDefault;
-import org.springframework.data.web.config.EnableSpringDataWebSupport;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -28,6 +25,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import br.com.lorencini.forum.TopicoService;
 import br.com.lorencini.forum.dto.DetalhesDoTopicoDto;
 import br.com.lorencini.forum.dto.TopicoDto;
 import br.com.lorencini.forum.form.AtualizacaoTopicoForm;
@@ -43,7 +41,10 @@ import br.com.lorencini.forum.repository.TopicoRespository;
 public class TopicosController {
 	
 	@Autowired
-	private TopicoRespository topicoRepository;
+	private TopicoRespository topicoRepository; 
+	
+	@Autowired
+	private TopicoService topicoService;
 	
 	@Autowired
 	private CursoRepository cursoRepository;
@@ -93,18 +94,18 @@ public class TopicosController {
 		
 	}
 	
-	@GetMapping("/{id}")//tem que especificar pois tem outro GetMapping
-	public ResponseEntity<DetalhesDoTopicoDto> detalhar(@PathVariable Long id) {//@PathVariable o parametro não vem na ? e sim na /(parte da url)
-		// o getOne(id) ele considera que exiate um registro(id) no banco se não encontrar não retorna nullo retorna um exception
-		//Topico topico = topicoRepository.getOne(id);
-		//o findById(id) se não encotrar não retorna uma exception devolve um Optional(opcional) pode ser que exista ou não o registro
-		Optional<Topico> topico = topicoRepository.findById(id);
-		if(topico.isPresent()) {
-			return ResponseEntity.ok(new DetalhesDoTopicoDto(topico.get()));//topico.get() chama o get() que está dentro do Optional
-		} 
-		
-		return ResponseEntity.notFound().build();//devolve um 404 nao devolve corpo no body do postman
-	}
+	
+	  @GetMapping("/{id}")//tem que especificar pois tem outro GetMapping public
+	  ResponseEntity<DetalhesDoTopicoDto> detalhar(@PathVariable Long id)  {//@PathVariable o parametro não vem na ? e sim na /(parte da url) // o  getOne(id) ele considera que exiate um registro(id) no banco se não encontrar  não retorna nullo retorna um exception //Topico topico =
+	  topicoRepository.getOne(id); //o findById(id) se não encotrar não retorna uma  exception devolve um Optional(opcional) pode ser que exista ou não o registro
+	  Optional<Topico> topico = topicoRepository.findById(id);
+	  if(topico.isPresent()) { return ResponseEntity.ok(new
+	  DetalhesDoTopicoDto(topico.get()));//topico.get() chama o get() que está dentro do Optional 
+	  }
+	  
+	  return ResponseEntity.notFound().build();//devolve um 404 nao devolve corpo  no body do postman 
+	  }
+	 
 	
 	@PutMapping("/{id}")
 	@Transactional //comita a transacao depois que rodar o metodo
@@ -134,5 +135,14 @@ public class TopicosController {
 		return ResponseEntity.notFound().build();//devolve um 404 nao devolve corpo no body do postman
 
 	}
+	
+	/*
+	 * @GetMapping("/{id}") public ResponseEntity<DetalhesDoTopicoDto>
+	 * detalhar(@PathVariable Long id) throws Throwable { Optional<Topico> topico =
+	 * topicoService.findById(id); if(topico.isPresent()) { return
+	 * ResponseEntity.ok(new DetalhesDoTopicoDto(topico.get())); }
+	 * 
+	 * return ResponseEntity.notFound().build(); }
+	 */
 
 }
